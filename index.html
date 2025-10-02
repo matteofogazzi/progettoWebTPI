@@ -1,25 +1,51 @@
 <!DOCTYPE html>
-<html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-        <script src="app.js" defer></script>
-    </head>
-    <body>
-        <h1>TODO list</h1>
-        <form id="form-registrazione">
-            <fieldset>
-                <legend>Nome</legend>
-                <label for="nome">Todo:</label><br>
-                <input type="text" id="nome" name="nome" required><br>
-            </fieldset>
-            <input type="submit" value="Iscriviti">
-        </form>
-        <ul id="cosedafare">
-            <li>a</li>
-            <li>b</li>
-            <li>c</li>
-        </ul>
-    </body>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DaisyUI via CDN</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- DaisyUI via CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="p-10 flex flex-col items-center gap-8 bg-base-200">
+
+  <!-- Titolo -->
+  <h1 class="text-4xl font-bold">🌼 Web App con DaisyUI</h1>
+
+  <!-- Bottoni -->
+  <div class="flex gap-4">
+    <button class="btn btn-primary">Primario</button>
+    <button class="btn btn-secondary">Secondario</button>
+    <button class="btn btn-accent">Accento</button>
+  </div>
+
+  <!-- Card -->
+  <div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title">Esempio di Card</h2>
+      <p>Questa card è pronta con DaisyUI. Non ho scritto CSS!</p>
+      <div class="card-actions justify-end">
+        <button class="btn btn-success">Ok</button>
+        <button class="btn btn-error">Cancella</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <div class="navbar bg-base-100 shadow-md rounded-box w-full max-w-4xl">
+    <div class="flex-1">
+      <a class="btn btn-ghost normal-case text-xl">Logo</a>
+    </div>
+    <div class="flex-none gap-2">
+      <button class="btn btn-ghost">Home</button>
+      <button class="btn btn-ghost">About</button>
+      <button class="btn btn-ghost">Contatti</button>
+    </div>
+  </div>
+
+</body>
 </html>
