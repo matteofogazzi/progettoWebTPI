@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" >
+  <meta charset="UTF-8" />
   <title>DevTask Manager - Kanban</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -197,12 +197,16 @@
 
             const top = document.createElement('div');
             top.className = 'flex justify-between items-center mb-2';
+
+            // Titolo in grassetto
             const titleEl = document.createElement('h4');
             titleEl.className = 'font-bold text-gray-800 dark:text-gray-100';
             titleEl.textContent = issue.title;
+
             const pri = document.createElement('span');
             pri.className = `text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[issue.priority]}`;
             pri.textContent = issue.priority;
+
             top.appendChild(titleEl);
             top.appendChild(pri);
             card.appendChild(top);
@@ -216,11 +220,12 @@
             footer.className = 'flex justify-between items-center mt-4 text-sm';
 
             const assigneeEl = document.createElement('span');
-            assigneeEl.className = 'text-gray-500 dark:text-gray-400';
+            assigneeEl.className = 'inline-block bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-xs font-semibold px-3 py-1 rounded-full';
             assigneeEl.textContent = issue.assignee;
 
             const btns = document.createElement('div');
             btns.className = 'flex gap-2';
+
             const moveBtn = document.createElement('button');
             moveBtn.className = 'text-indigo-600 dark:text-indigo-300 hover:underline';
             moveBtn.textContent = 'Sposta';
