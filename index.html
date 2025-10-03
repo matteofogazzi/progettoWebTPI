@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" >
   <title>DevTask Manager - Kanban</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,6 +19,10 @@
     body {
       font-family: 'Inter', sans-serif;
     }
+    /* Sposta il pallino del toggle dark mode quando checked */
+    input#themeSwitch:checked + div .dot {
+      transform: translateX(1.25rem);
+    }
   </style>
 </head>
 
@@ -28,45 +32,90 @@
     <!-- Intestazione -->
     <header class="flex items-center justify-between">
       <h1 class="text-3xl font-bold">DevTask Manager</h1>
-      <div class="flex items-center gap-4">
-        <button id="themeToggle" class="bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-500 transition">
-          🌙 / ☀️
-        </button>
-        <button onclick="openForm()" class="bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-500 transition">
+      <div class="flex items-center gap-6">
+
+        <!-- Toggle dark mode: slider -->
+        <label class="flex items-center cursor-pointer select-none">
+          <span class="mr-2 text-sm">🌞</span>
+          <input type="checkbox" id="themeSwitch" class="sr-only" />
+          <div
+            class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full shadow-inner transition-colors duration-300 relative"
+          >
+            <div
+              class="dot absolute left-0 top-0 w-5 h-5 bg-white dark:bg-gray-200 rounded-full shadow transition transform duration-300"
+            ></div>
+          </div>
+          <span class="ml-2 text-sm">🌙</span>
+        </label>
+
+        <button
+          onclick="openForm()"
+          class="bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-500 transition"
+        >
           + Nuova Issue
         </button>
       </div>
     </header>
 
     <!-- Kanban Board -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="kanbanBoard">
-      <!-- Colonne generate dinamicamente -->
-    </div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      id="kanbanBoard"
+    ></div>
   </div>
 
   <!-- Modal Form -->
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center hidden z-50">
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-xl transition-colors duration-300 border border-gray-300 dark:border-gray-700">
+  <div
+    id="modal"
+    class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center hidden z-50"
+  >
+    <div
+      class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-xl transition-colors duration-300 border border-gray-300 dark:border-gray-700"
+    >
       <h2 class="text-xl font-semibold mb-4">Crea una nuova issue</h2>
       <form id="issueForm" class="space-y-4">
-        <input id="title" type="text" placeholder="Titolo" required
-               class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
-        <input id="description" type="text" placeholder="Descrizione" required
-               class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
-        <input id="assignee" type="text" placeholder="Assegnato a" required
-               class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
-        <select id="priority"
-                class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition">
+        <input
+          id="title"
+          type="text"
+          placeholder="Titolo"
+          required
+          class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition"
+        />
+        <input
+          id="description"
+          type="text"
+          placeholder="Descrizione"
+          required
+          class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition"
+        />
+        <input
+          id="assignee"
+          type="text"
+          placeholder="Assegnato a"
+          required
+          class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition"
+        />
+        <select
+          id="priority"
+          class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition"
+        >
           <option value="low">Bassa</option>
           <option value="medium">Media</option>
           <option value="high">Alta</option>
           <option value="critical">Critica</option>
         </select>
         <div class="flex justify-end gap-2">
-          <button type="button" onclick="closeForm()" class="px-4 py-2 rounded border border-gray-500 dark:border-gray-500 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+          <button
+            type="button"
+            onclick="closeForm()"
+            class="px-4 py-2 rounded border border-gray-500 dark:border-gray-500 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+          >
             Annulla
           </button>
-          <button type="submit" class="px-4 py-2 rounded bg-indigo-600 dark:bg-indigo-500 text-white dark:text-gray-900 hover:bg-indigo-700 dark:hover:bg-indigo-400 transition">
+          <button
+            type="submit"
+            class="px-4 py-2 rounded bg-indigo-600 dark:bg-indigo-500 text-white dark:text-gray-900 hover:bg-indigo-700 dark:hover:bg-indigo-400 transition"
+          >
             Salva
           </button>
         </div>
@@ -78,31 +127,41 @@
     const columns = ['Backlog', 'In Progress', 'Review', 'Done'];
     let issues = JSON.parse(localStorage.getItem('issues')) || [];
 
-    const themeToggle = document.getElementById('themeToggle');
+    const themeSwitch = document.getElementById('themeSwitch');
 
-    // Dark Mode toggle
+    // Carica tema iniziale
     function loadTheme() {
       const theme = localStorage.getItem('theme');
-      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (theme === 'dark' || (!theme && prefersDark)) {
         document.documentElement.classList.add('dark');
+        themeSwitch.checked = true;
       } else {
         document.documentElement.classList.remove('dark');
+        themeSwitch.checked = false;
       }
     }
 
-    function toggleTheme() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
+    // Cambia tema con switch
+    themeSwitch.addEventListener('change', () => {
+      const isDark = themeSwitch.checked;
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    });
 
-    themeToggle.addEventListener('click', toggleTheme);
     loadTheme();
 
     const priorityColors = {
       low: 'bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-100',
       medium: 'bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-100',
       high: 'bg-red-200 dark:bg-red-700 text-red-800 dark:text-red-100',
-      critical: 'bg-pink-200 dark:bg-pink-700 text-pink-800 dark:text-pink-100'
+      critical: 'bg-pink-200 dark:bg-pink-700 text-pink-800 dark:text-pink-100',
     };
 
     function saveIssues() {
@@ -113,30 +172,33 @@
       const board = document.getElementById('kanbanBoard');
       board.innerHTML = '';
 
-      columns.forEach(status => {
+      columns.forEach((status) => {
         const col = document.createElement('div');
-        col.className = 'flex flex-col bg-gray-200 dark:bg-gray-800 rounded-lg p-4 min-h-[300px] transition-colors duration-300';
+        col.className =
+          'flex flex-col bg-gray-200 dark:bg-gray-800 rounded-lg p-4 min-h-[300px] transition-colors duration-300';
 
         const header = document.createElement('h3');
-        header.className = 'text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200 border-b border-gray-400 dark:border-gray-600 pb-2';
+        header.className =
+          'text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200 border-b border-gray-400 dark:border-gray-600 pb-2';
         header.textContent = status;
         col.appendChild(header);
 
-        const filtered = issues.filter(i => i.status === status);
+        const filtered = issues.filter((i) => i.status === status);
         if (filtered.length === 0) {
           const empty = document.createElement('p');
           empty.className = 'text-gray-500 dark:text-gray-400 italic text-sm';
           empty.textContent = 'Nessuna issue';
           col.appendChild(empty);
         } else {
-          filtered.forEach(issue => {
+          filtered.forEach((issue) => {
             const card = document.createElement('div');
-            card.className = 'bg-white dark:bg-gray-700 rounded-md p-4 mb-4 shadow-sm dark:shadow-md transition-colors duration-300';
+            card.className =
+              'bg-white dark:bg-gray-700 rounded-md p-4 mb-4 shadow-sm dark:shadow-md transition-colors duration-300';
 
             const top = document.createElement('div');
             top.className = 'flex justify-between items-center mb-2';
             const titleEl = document.createElement('h4');
-            titleEl.className = 'font-medium text-gray-800 dark:text-gray-100';
+            titleEl.className = 'font-bold text-gray-800 dark:text-gray-100';
             titleEl.textContent = issue.title;
             const pri = document.createElement('span');
             pri.className = `text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[issue.priority]}`;
@@ -155,7 +217,7 @@
 
             const assigneeEl = document.createElement('span');
             assigneeEl.className = 'text-gray-500 dark:text-gray-400';
-            assigneeEl.textContent = '👤 ' + issue.assignee;
+            assigneeEl.textContent = issue.assignee;
 
             const btns = document.createElement('div');
             btns.className = 'flex gap-2';
@@ -201,7 +263,7 @@
         description: document.getElementById('description').value.trim(),
         assignee: document.getElementById('assignee').value.trim(),
         priority: document.getElementById('priority').value,
-        status: 'Backlog'
+        status: 'Backlog',
       };
       issues.push(newIssue);
       saveIssues();
@@ -210,7 +272,7 @@
     });
 
     function moveIssue(id) {
-      const issue = issues.find(i => i.id === id);
+      const issue = issues.find((i) => i.id === id);
       const idx = columns.indexOf(issue.status);
       if (idx < columns.length - 1) {
         issue.status = columns[idx + 1];
@@ -220,7 +282,7 @@
     }
 
     function deleteIssue(id) {
-      issues = issues.filter(i => i.id !== id);
+      issues = issues.filter((i) => i.id !== id);
       saveIssues();
       renderBoard();
     }
