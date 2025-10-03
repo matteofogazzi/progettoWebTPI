@@ -1,51 +1,222 @@
 <!DOCTYPE html>
-<html lang="it" data-theme="light">
+<html lang="it" class="darkModeSupported">
 <head>
   <meta charset="UTF-8">
+  <title>DevTask Manager - Kanban con Dark Mode</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DaisyUI via CDN</title>
-
-  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- DaisyUI via CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    /* Usa la modalità dark basata su classe */
+    /* Tailwind v3+ permette dark: variante. */
+    /* Vedi documentazione dark mode */  
+  </style>
 </head>
-<body class="p-10 flex flex-col items-center gap-8 bg-base-200">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen p-6 transition-colors duration-300">
 
-  <!-- Titolo -->
-  <h1 class="text-4xl font-bold">🌼 Web App con DaisyUI</h1>
+  <div class="max-w-7xl mx-auto space-y-10">
 
-  <!-- Bottoni -->
-  <div class="flex gap-4">
-    <button class="btn btn-primary">Primario</button>
-    <button class="btn btn-secondary">Secondario</button>
-    <button class="btn btn-accent">Accento</button>
-  </div>
-
-  <!-- Card -->
-  <div class="card w-96 bg-base-100 shadow-xl">
-    <div class="card-body">
-      <h2 class="card-title">Esempio di Card</h2>
-      <p>Questa card è pronta con DaisyUI. Non ho scritto CSS!</p>
-      <div class="card-actions justify-end">
-        <button class="btn btn-success">Ok</button>
-        <button class="btn btn-error">Cancella</button>
+    <header class="flex items-center justify-between">
+      <h1 class="text-3xl font-bold">DevTask Manager</h1>
+      <div class="flex items-center gap-4">
+        <button id="themeToggle" class="bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-500 transition">
+          🌙 / ☀️
+        </button>
+        <button onclick="openForm()" class="bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-500 transition">
+          + Nuova Issue
+        </button>
       </div>
+    </header>
+
+    <!-- Kanban Board -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="kanbanBoard">
+      <!-- Colonne generate dinamicamente -->
     </div>
   </div>
 
-  <!-- Navbar -->
-  <div class="navbar bg-base-100 shadow-md rounded-box w-full max-w-4xl">
-    <div class="flex-1">
-      <a class="btn btn-ghost normal-case text-xl">Logo</a>
-    </div>
-    <div class="flex-none gap-2">
-      <button class="btn btn-ghost">Home</button>
-      <button class="btn btn-ghost">About</button>
-      <button class="btn btn-ghost">Contatti</button>
+  <!-- Modal Form -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-xl transition-colors duration-300 border border-gray-300 dark:border-gray-700">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Crea una nuova issue</h2>
+      <form id="issueForm" class="space-y-4">
+        <input id="title" type="text" placeholder="Titolo" required
+               class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
+        <input id="description" type="text" placeholder="Descrizione" required
+               class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
+        <input id="assignee" type="text" placeholder="Assegnato a" required
+               class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
+        <select id="priority"
+                class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition">
+          <option value="low">Bassa</option>
+          <option value="medium">Media</option>
+          <option value="high">Alta</option>
+          <option value="critical">Critica</option>
+        </select>
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="closeForm()" class="px-4 py-2 rounded border border-gray-500 dark:border-gray-500 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+            Annulla
+          </button>
+          <button type="submit" class="px-4 py-2 rounded bg-indigo-600 dark:bg-indigo-500 text-white dark:text-gray-900 hover:bg-indigo-700 dark:hover:bg-indigo-400 transition">
+            Salva
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
+  <script>
+    const columns = ['Backlog', 'In Progress', 'Review', 'Done'];
+    let issues = JSON.parse(localStorage.getItem('issues')) || [];
+
+    // gestione tema
+    const themeToggle = document.getElementById('themeToggle');
+    // controlla localStorage per tema
+    function loadTheme() {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    themeToggle.addEventListener('click', toggleTheme);
+    loadTheme();
+
+    // colori priorità
+    const priorityColors = {
+      low: 'bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-100',
+      medium: 'bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-100',
+      high: 'bg-red-200 dark:bg-red-700 text-red-800 dark:text-red-100',
+      critical: 'bg-pink-200 dark:bg-pink-700 text-pink-800 dark:text-pink-100'
+    };
+
+    function saveIssues() {
+      localStorage.setItem('issues', JSON.stringify(issues));
+    }
+
+    function renderBoard() {
+      const board = document.getElementById('kanbanBoard');
+      board.innerHTML = '';
+
+      columns.forEach(status => {
+        const col = document.createElement('div');
+        col.className = 'flex flex-col bg-gray-200 dark:bg-gray-800 rounded-lg p-4 min-h-[300px] transition-colors duration-300';
+
+        const header = document.createElement('h3');
+        header.className = 'text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200 border-b border-gray-400 dark:border-gray-600 pb-2';
+        header.textContent = status;
+        col.appendChild(header);
+
+        const filtered = issues.filter(i => i.status === status);
+        if (filtered.length === 0) {
+          const empty = document.createElement('p');
+          empty.className = 'text-gray-500 dark:text-gray-400 italic text-sm';
+          empty.textContent = 'Nessuna issue';
+          col.appendChild(empty);
+        } else {
+          filtered.forEach(issue => {
+            const card = document.createElement('div');
+            card.className = 'card bg-white dark:bg-gray-700 rounded-md p-4 mb-4 shadow-sm dark:shadow-lg transition-colors duration-300';
+
+            const top = document.createElement('div');
+            top.className = 'flex justify-between items-center';
+            const titleEl = document.createElement('h4');
+            titleEl.className = 'font-medium text-gray-800 dark:text-gray-100';
+            titleEl.textContent = issue.title;
+            const pri = document.createElement('span');
+            pri.className = `priority rounded-full px-2 py-1 ${priorityColors[issue.priority]}`;
+            pri.textContent = issue.priority;
+            top.appendChild(titleEl);
+            top.appendChild(pri);
+            card.appendChild(top);
+
+            const desc = document.createElement('p');
+            desc.className = 'text-sm text-gray-600 dark:text-gray-300 mt-2';
+            desc.textContent = issue.description;
+            card.appendChild(desc);
+
+            const footer = document.createElement('div');
+            footer.className = 'flex justify-between items-center mt-4';
+            const assigneeEl = document.createElement('span');
+            assigneeEl.className = 'text-xs text-gray-500 dark:text-gray-400';
+            assigneeEl.textContent = '👤 ' + issue.assignee;
+            footer.appendChild(assigneeEl);
+
+            const btns = document.createElement('div');
+            btns.className = 'flex gap-2';
+            const moveBtn = document.createElement('button');
+            moveBtn.className = 'text-indigo-600 dark:text-indigo-300 hover:underline text-sm';
+            moveBtn.textContent = 'Sposta';
+            moveBtn.onclick = () => moveIssue(issue.id);
+            const delBtn = document.createElement('button');
+            delBtn.className = 'text-red-600 dark:text-red-400 hover:underline text-sm';
+            delBtn.textContent = 'Elimina';
+            delBtn.onclick = () => deleteIssue(issue.id);
+            btns.appendChild(moveBtn);
+            btns.appendChild(delBtn);
+
+            footer.appendChild(btns);
+            card.appendChild(footer);
+
+            col.appendChild(card);
+          });
+        }
+
+        board.appendChild(col);
+      });
+    }
+
+    function openForm() {
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function closeForm() {
+      document.getElementById('modal').classList.add('hidden');
+      document.getElementById('issueForm').reset();
+    }
+
+    document.getElementById('issueForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const newIssue = {
+        id: Date.now(),
+        title: document.getElementById('title').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        assignee: document.getElementById('assignee').value.trim(),
+        priority: document.getElementById('priority').value,
+        status: 'Backlog'
+      };
+      issues.push(newIssue);
+      saveIssues();
+      renderBoard();
+      closeForm();
+    });
+
+    function moveIssue(id) {
+      const issue = issues.find(i => i.id === id);
+      const idx = columns.indexOf(issue.status);
+      if (idx < columns.length - 1) {
+        issue.status = columns[idx + 1];
+        saveIssues();
+        renderBoard();
+      }
+    }
+
+    function deleteIssue(id) {
+      issues = issues.filter(i => i.id !== id);
+      saveIssues();
+      renderBoard();
+    }
+
+    // inizializzazione
+    renderBoard();
+  </script>
 </body>
 </html>
