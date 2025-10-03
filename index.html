@@ -1,20 +1,31 @@
 <!DOCTYPE html>
-<html lang="it" class="darkModeSupported">
+<html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>DevTask Manager - Kanban con Dark Mode</title>
+  <title>DevTask Manager - Kanban</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Abilita Dark Mode via class -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+
   <style>
-    /* Usa la modalità dark basata su classe */
-    /* Tailwind v3+ permette dark: variante. */
-    /* Vedi documentazione dark mode */  
+    body {
+      font-family: 'Inter', sans-serif;
+    }
   </style>
 </head>
+
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen p-6 transition-colors duration-300">
 
   <div class="max-w-7xl mx-auto space-y-10">
-
+    <!-- Intestazione -->
     <header class="flex items-center justify-between">
       <h1 class="text-3xl font-bold">DevTask Manager</h1>
       <div class="flex items-center gap-4">
@@ -34,9 +45,9 @@
   </div>
 
   <!-- Modal Form -->
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center hidden">
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-xl transition-colors duration-300 border border-gray-300 dark:border-gray-700">
-      <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Crea una nuova issue</h2>
+      <h2 class="text-xl font-semibold mb-4">Crea una nuova issue</h2>
       <form id="issueForm" class="space-y-4">
         <input id="title" type="text" placeholder="Titolo" required
                class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
@@ -67,9 +78,9 @@
     const columns = ['Backlog', 'In Progress', 'Review', 'Done'];
     let issues = JSON.parse(localStorage.getItem('issues')) || [];
 
-    // gestione tema
     const themeToggle = document.getElementById('themeToggle');
-    // controlla localStorage per tema
+
+    // Dark Mode toggle
     function loadTheme() {
       const theme = localStorage.getItem('theme');
       if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -78,19 +89,15 @@
         document.documentElement.classList.remove('dark');
       }
     }
+
     function toggleTheme() {
-      if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      }
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
+
     themeToggle.addEventListener('click', toggleTheme);
     loadTheme();
 
-    // colori priorità
     const priorityColors = {
       low: 'bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-100',
       medium: 'bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-100',
@@ -124,48 +131,51 @@
         } else {
           filtered.forEach(issue => {
             const card = document.createElement('div');
-            card.className = 'card bg-white dark:bg-gray-700 rounded-md p-4 mb-4 shadow-sm dark:shadow-lg transition-colors duration-300';
+            card.className = 'bg-white dark:bg-gray-700 rounded-md p-4 mb-4 shadow-sm dark:shadow-md transition-colors duration-300';
 
             const top = document.createElement('div');
-            top.className = 'flex justify-between items-center';
+            top.className = 'flex justify-between items-center mb-2';
             const titleEl = document.createElement('h4');
             titleEl.className = 'font-medium text-gray-800 dark:text-gray-100';
             titleEl.textContent = issue.title;
             const pri = document.createElement('span');
-            pri.className = `priority rounded-full px-2 py-1 ${priorityColors[issue.priority]}`;
+            pri.className = `text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[issue.priority]}`;
             pri.textContent = issue.priority;
             top.appendChild(titleEl);
             top.appendChild(pri);
             card.appendChild(top);
 
             const desc = document.createElement('p');
-            desc.className = 'text-sm text-gray-600 dark:text-gray-300 mt-2';
+            desc.className = 'text-sm text-gray-600 dark:text-gray-300';
             desc.textContent = issue.description;
             card.appendChild(desc);
 
             const footer = document.createElement('div');
-            footer.className = 'flex justify-between items-center mt-4';
+            footer.className = 'flex justify-between items-center mt-4 text-sm';
+
             const assigneeEl = document.createElement('span');
-            assigneeEl.className = 'text-xs text-gray-500 dark:text-gray-400';
+            assigneeEl.className = 'text-gray-500 dark:text-gray-400';
             assigneeEl.textContent = '👤 ' + issue.assignee;
-            footer.appendChild(assigneeEl);
 
             const btns = document.createElement('div');
             btns.className = 'flex gap-2';
             const moveBtn = document.createElement('button');
-            moveBtn.className = 'text-indigo-600 dark:text-indigo-300 hover:underline text-sm';
+            moveBtn.className = 'text-indigo-600 dark:text-indigo-300 hover:underline';
             moveBtn.textContent = 'Sposta';
             moveBtn.onclick = () => moveIssue(issue.id);
+
             const delBtn = document.createElement('button');
-            delBtn.className = 'text-red-600 dark:text-red-400 hover:underline text-sm';
+            delBtn.className = 'text-red-600 dark:text-red-400 hover:underline';
             delBtn.textContent = 'Elimina';
             delBtn.onclick = () => deleteIssue(issue.id);
+
             btns.appendChild(moveBtn);
             btns.appendChild(delBtn);
 
+            footer.appendChild(assigneeEl);
             footer.appendChild(btns);
-            card.appendChild(footer);
 
+            card.appendChild(footer);
             col.appendChild(card);
           });
         }
@@ -183,7 +193,7 @@
       document.getElementById('issueForm').reset();
     }
 
-    document.getElementById('issueForm').addEventListener('submit', function(e) {
+    document.getElementById('issueForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const newIssue = {
         id: Date.now(),
@@ -215,7 +225,7 @@
       renderBoard();
     }
 
-    // inizializzazione
+    // Inizializzazione
     renderBoard();
   </script>
 </body>
