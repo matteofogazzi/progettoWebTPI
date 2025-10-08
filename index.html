@@ -7,7 +7,6 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <script>
     tailwind.config = { darkMode: 'class' }
   </script>
@@ -20,9 +19,7 @@
       background-color: rgba(99, 102, 241, 0.1);
       border: 2px dashed rgba(99, 102, 241, 0.5);
     }
-    .dragging {
-      opacity: 0.5;
-    }
+    .dragging { opacity: 0.5; }
   </style>
 </head>
 
@@ -33,8 +30,6 @@
     <header class="flex items-center justify-between">
       <h1 class="text-3xl font-bold">DevTask Manager</h1>
       <div class="flex items-center gap-6">
-
-        <!-- Toggle dark mode -->
         <label class="flex items-center cursor-pointer select-none">
           <span class="mr-2 text-sm">🌞</span>
           <input type="checkbox" id="themeSwitch" class="sr-only" />
@@ -67,8 +62,9 @@
   <!-- Modal Form -->
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-xl transition-colors duration-300 border border-gray-300 dark:border-gray-700">
-      <h2 class="text-xl font-semibold mb-4">Crea una nuova issue</h2>
+      <h2 id="modalTitle" class="text-xl font-semibold mb-4">Crea una nuova issue</h2>
       <form id="issueForm" class="space-y-4">
+        <input type="hidden" id="editId" />
         <input id="title" type="text" placeholder="Titolo" required class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
         <input id="description" type="text" placeholder="Descrizione" required class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
         <input id="assignee" type="text" placeholder="Assegnato a" required class="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-300 transition" />
@@ -91,11 +87,11 @@
     let issues = JSON.parse(localStorage.getItem('issues')) || [];
     let filteredIssues = [...issues];
     let draggedId = null;
+    let editing = false;
 
     const themeSwitch = document.getElementById('themeSwitch');
     const searchInput = document.getElementById('searchInput');
 
-    // === Tema ===
     function loadTheme() {
       const theme = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -139,7 +135,7 @@
         header.textContent = status;
         col.appendChild(header);
 
-        // Drag & drop
+        // drag & drop per la colonna
         col.addEventListener('dragover', (e) => {
           e.preventDefault();
           const afterElement = getDragAfterElement(col, e.clientY);
@@ -148,27 +144,18 @@
           else col.insertBefore(draggable, afterElement);
         });
 
-        col.addEventListener('dragenter', () => col.classList.add('drag-over'));
-        col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
-
         col.addEventListener('drop', (e) => {
           e.preventDefault();
-          col.classList.remove('drag-over');
           const dragged = issues.find(i => i.id === draggedId);
           if (!dragged) return;
           const newStatus = col.dataset.status;
-          const colIssues = issues.filter(i => i.status === newStatus && i.id !== draggedId);
-
-          // Trova posizione corretta nel nuovo ordine
           const afterEl = getDragAfterElement(col, e.clientY);
+          issues = issues.filter(i => i.id !== draggedId);
           if (afterEl) {
             const afterId = parseInt(afterEl.dataset.id);
-            const insertIndex = issues.findIndex(i => i.id === afterId);
-            issues = issues.filter(i => i.id !== draggedId);
-            issues.splice(insertIndex, 0, { ...dragged, status: newStatus });
+            const idx = issues.findIndex(i => i.id === afterId);
+            issues.splice(idx, 0, { ...dragged, status: newStatus });
           } else {
-            // fine colonna
-            issues = issues.filter(i => i.id !== draggedId);
             issues.push({ ...dragged, status: newStatus });
           }
           saveIssues();
@@ -199,17 +186,13 @@
 
             const top = document.createElement('div');
             top.className = 'flex justify-between items-center mb-2';
-
             const titleEl = document.createElement('h4');
             titleEl.className = 'font-bold text-gray-800 dark:text-gray-100';
             titleEl.textContent = issue.title;
-
             const pri = document.createElement('span');
             pri.className = `text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[issue.priority]}`;
             pri.textContent = issue.priority;
-
-            top.appendChild(titleEl);
-            top.appendChild(pri);
+            top.append(titleEl, pri);
             card.appendChild(top);
 
             const desc = document.createElement('p');
@@ -219,58 +202,86 @@
 
             const footer = document.createElement('div');
             footer.className = 'flex justify-between items-center mt-4 text-sm';
-
             const assigneeEl = document.createElement('span');
             assigneeEl.className = 'inline-block bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-xs font-semibold px-3 py-1 rounded-full';
             assigneeEl.textContent = issue.assignee;
-
+            const btns = document.createElement('div');
+            btns.className = 'flex gap-2';
+            const editBtn = document.createElement('button');
+            editBtn.className = 'text-blue-600 dark:text-blue-400 hover:underline';
+            editBtn.textContent = 'Modifica';
+            editBtn.onclick = () => editIssue(issue.id);
             const delBtn = document.createElement('button');
             delBtn.className = 'text-red-600 dark:text-red-400 hover:underline';
             delBtn.textContent = 'Elimina';
             delBtn.onclick = () => deleteIssue(issue.id);
-
-            footer.appendChild(assigneeEl);
-            footer.appendChild(delBtn);
+            btns.append(editBtn, delBtn);
+            footer.append(assigneeEl, btns);
             card.appendChild(footer);
 
             col.appendChild(card);
           });
         }
-
         board.appendChild(col);
       });
     }
 
     function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.bg-white.dark\\:bg-gray-700:not(.dragging)')];
-      return draggableElements.reduce((closest, child) => {
+      const elements = [...container.querySelectorAll('.bg-white.dark\\:bg-gray-700:not(.dragging)')];
+      return elements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset, element: child };
-        } else return closest;
+        if (offset < 0 && offset > closest.offset) return { offset, element: child };
+        else return closest;
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    // Modal
-    function openForm() { document.getElementById('modal').classList.remove('hidden'); }
-    function closeForm() { document.getElementById('modal').classList.add('hidden'); document.getElementById('issueForm').reset(); }
+    function openForm() {
+      editing = false;
+      document.getElementById('modalTitle').textContent = 'Crea una nuova issue';
+      document.getElementById('issueForm').reset();
+      document.getElementById('editId').value = '';
+      document.getElementById('modal').classList.remove('hidden');
+    }
 
-    document.getElementById('issueForm').addEventListener('submit', function (e) {
+    function closeForm() {
+      document.getElementById('modal').classList.add('hidden');
+      document.getElementById('issueForm').reset();
+      editing = false;
+    }
+
+    document.getElementById('issueForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const newIssue = {
-        id: Date.now(),
+      const id = document.getElementById('editId').value;
+      const data = {
         title: document.getElementById('title').value.trim(),
         description: document.getElementById('description').value.trim(),
         assignee: document.getElementById('assignee').value.trim(),
         priority: document.getElementById('priority').value,
-        status: 'Backlog',
       };
-      issues.push(newIssue);
+      if (editing && id) {
+        const idx = issues.findIndex((i) => i.id == id);
+        if (idx >= 0) issues[idx] = { ...issues[idx], ...data };
+      } else {
+        issues.push({ id: Date.now(), ...data, status: 'Backlog' });
+      }
       saveIssues();
       filterIssues();
       closeForm();
     });
+
+    function editIssue(id) {
+      const issue = issues.find((i) => i.id === id);
+      if (!issue) return;
+      editing = true;
+      document.getElementById('modalTitle').textContent = 'Modifica Issue';
+      document.getElementById('editId').value = issue.id;
+      document.getElementById('title').value = issue.title;
+      document.getElementById('description').value = issue.description;
+      document.getElementById('assignee').value = issue.assignee;
+      document.getElementById('priority').value = issue.priority;
+      document.getElementById('modal').classList.remove('hidden');
+    }
 
     function deleteIssue(id) {
       issues = issues.filter((i) => i.id !== id);
@@ -279,16 +290,10 @@
     }
 
     function filterIssues() {
-      const query = searchInput.value.trim().toLowerCase();
-      if (!query) filteredIssues = [...issues];
-      else {
-        filteredIssues = issues.filter((issue) =>
-          [issue.title, issue.assignee, issue.description, issue.priority]
-            .join(' ')
-            .toLowerCase()
-            .includes(query)
-        );
-      }
+      const q = searchInput.value.trim().toLowerCase();
+      filteredIssues = !q ? [...issues] : issues.filter((i) =>
+        [i.title, i.description, i.assignee, i.priority].join(' ').toLowerCase().includes(q)
+      );
       renderBoard();
     }
 
