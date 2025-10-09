@@ -74,4 +74,3 @@ Supporta inoltre **modalità chiara/scura**, ricerca e filtraggio delle issue in
 5. Filtra o cerca le issue con il campo di ricerca.
 6. Attiva/disattiva il tema scuro/chiaro tramite l'interruttore in alto a destra.
 
-## Struttura del progetto
