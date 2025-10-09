@@ -23,7 +23,7 @@ Supporta inoltre **modalità chiara/scura**, ricerca e filtraggio delle issue in
 - Persistenza dei dati nel **localStorage**, nessun backend richiesto.
 
 ## Tecnologie utilizzate
-- **HTML5 / CSS3**
+- **HTML / CSS**
 - **JavaScript**
 - **Tailwind CSS**
 - LocalStorage del browser
