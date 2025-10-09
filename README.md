@@ -64,7 +64,7 @@ Supporta inoltre **modalità chiara/scura**, ricerca e filtraggio delle issue in
 - Supporto ai temi chiaro/scuro per accessibilità visiva
 
 ## Screenshot
-![Kanban Board](inserisci_il_percorso_dell_immagine_qui)
+![Kanban Board](foto/addIssue.png)
 
 ## Come usare l'app
 1. Apri il file `index.html` in un browser moderno.
