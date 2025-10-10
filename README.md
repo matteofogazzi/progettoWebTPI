@@ -26,6 +26,7 @@ Supporta inoltre **modalità chiara/scura**, ricerca e filtraggio delle issue in
 - **HTML / CSS**
 - **JavaScript**
 - **Tailwind CSS**
+- **Daisy UI**
 - LocalStorage del browser
 
 ## Requisiti Funzionali
