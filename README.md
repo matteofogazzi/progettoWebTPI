@@ -56,11 +56,10 @@ Supporta inoltre **modalità chiara/scura**, ricerca e filtraggio delle issue in
 - Nessuna autenticazione o gestione utenti
 
 ## Requisiti Non Funzionali
-- Interfaccia responsiva, utilizzabile su desktop e dispositivi mobili
+- Interfaccia responsiva
 - UI chiara e comprensibile
 - Operazioni rapide e senza ritardi percepibili
-- Uso di **Tailwind CSS** per lo styling
-- Codice mantenibile e ben documentato
+- Uso di **Daisy UI** per lo styling
 - Supporto ai temi chiaro/scuro per accessibilità visiva
 
 ## Screenshot
