@@ -1,6 +1,6 @@
 # DevTask Manager - Kanban Board
 
-![Kanban Board](foto/home.png)
+![Kanban Board](foto/homeR.png)
 
 ## Descrizione del progetto
 DevTask Manager è un'applicazione web **Kanban** completamente lato client per la gestione delle issue e dei task di un progetto.  
