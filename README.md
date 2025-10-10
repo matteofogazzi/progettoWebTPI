@@ -40,14 +40,13 @@ Supporta inoltre **modalità chiara/scura**, ricerca e filtraggio delle issue in
 - Persistenza locale dei dati con **localStorage**
 - Caricamento automatico delle issue all’avvio
 - Ricerca e filtro in tempo reale su titolo, descrizione, assegnatario e priorità
+- Interruttore per tema chiaro/scuro
 
 ### Should Have
-- Interruttore per tema chiaro/scuro
 - Apertura/chiusura form issue tramite pulsanti
 - Salvataggio della preferenza di tema nel browser
 
 ### Could Have
-- Pulsanti e azioni facili da individuare e usare
 - Possibilità futura di modificare il contenuto delle issue dopo la creazione
 
 ### Never Have
