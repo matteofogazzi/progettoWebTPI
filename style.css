@@ -1,0 +1,16 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+input#themeSwitch:checked + div .dot {
+  transform: translateX(1.25rem);
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.drag-over {
+  background-color: rgba(99, 102, 241, 0.1);
+  border: 2px dashed rgba(99, 102, 241, 0.5);
+}
