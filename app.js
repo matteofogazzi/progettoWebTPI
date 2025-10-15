@@ -106,9 +106,21 @@ function renderBoard() {
         const titleEl = document.createElement('h4');
         titleEl.className = 'font-bold text-gray-800 dark:text-gray-100';
         titleEl.textContent = issue.title;
+
+        const priorities = ['low', 'medium', 'high', 'critical'];
         const pri = document.createElement('span');
-        pri.className = `text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[issue.priority]}`;
+        pri.className = `text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[issue.priority]} cursor-pointer`;
         pri.textContent = issue.priority;
+
+        // Click per aumentare la priorità
+        pri.addEventListener('click', () => {
+          let idx = priorities.indexOf(issue.priority);
+          idx = (idx + 1) % priorities.length;
+          issue.priority = priorities[idx];
+          saveIssues();
+          filterIssues();
+        });
+
         top.append(titleEl, pri);
         card.appendChild(top);
 
@@ -174,8 +186,9 @@ document.getElementById('issueForm').addEventListener('submit', (e) => {
     title: document.getElementById('title').value.trim(),
     description: document.getElementById('description').value.trim(),
     assignee: document.getElementById('assignee').value.trim(),
-    priority: document.getElementById('priority').value,
+    priority: document.getElementById('priority').value
   };
+
   if (editing && id) {
     const idx = issues.findIndex((i) => i.id == id);
     if (idx >= 0) issues[idx] = { ...issues[idx], ...data };
